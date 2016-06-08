@@ -5,16 +5,11 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/op/go-logging"
+	logging "github.com/op/go-logging"
 )
 
 const (
-	PINGTIME       = 30
-	PINGRANDOM     = 10
-	TIMEOUT_COUNT  = 4
-	GAMEOVER_COUNT = 20
-
-	DIAL_RETRY   = 3
+	DIAL_RETRY   = 2
 	DIAL_TIMEOUT = 30
 	AUTH_TIMEOUT = 10
 	DNS_TIMEOUT  = 30
@@ -35,9 +30,10 @@ const (
 )
 
 var (
+	ErrNoSession       = errors.New("session in pool but can't pick one.")
+	ErrSessionNotFound = errors.New("session not found.")
 	ErrAuthFailed      = errors.New("auth failed.")
 	ErrAuthTimeout     = errors.New("auth timeout %s.")
-	ErrNoSession       = errors.New("session in pool but can't pick one.")
 	ErrStreamNotExist  = errors.New("stream not exist.")
 	ErrQueueClosed     = errors.New("queue closed.")
 	ErrUnexpectedPkg   = errors.New("unexpected package.")
@@ -46,7 +42,6 @@ var (
 	ErrIdExist         = errors.New("frame sync stream id exist.")
 	ErrState           = errors.New("status error.")
 	ErrUnknownState    = errors.New("unknown status.")
-	ErrSessionNotFound = errors.New("session not found.")
 	ErrChanClosed      = errors.New("chan closed.")
 	ErrDnsTimeOut      = errors.New("dns timeout.")
 	ErrDnsMsgIllegal   = errors.New("dns message illegal.")
@@ -54,8 +49,7 @@ var (
 )
 
 var (
-	log        = logging.MustGetLogger("msocks")
-	frame_ping = NewFramePing()
+	log = logging.MustGetLogger("msocks")
 )
 
 func init() {

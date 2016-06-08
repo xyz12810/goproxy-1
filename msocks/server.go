@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io"
 	"net"
-
 	"time"
 
 	"github.com/shell909090/goproxy/sutils"
@@ -23,8 +22,8 @@ func NewServer(auth map[string]string, dialer sutils.Dialer) (ms *MsocksServer, 
 		return
 	}
 	ms = &MsocksServer{
+		SessionPool: CreateSessionPool(0, 0),
 		dialer:      dialer,
-		SessionPool: CreateSessionPool(nil),
 	}
 
 	if auth != nil {
@@ -33,7 +32,7 @@ func NewServer(auth map[string]string, dialer sutils.Dialer) (ms *MsocksServer, 
 	return
 }
 
-func (ms *MsocksServer) on_auth(stream io.ReadWriteCloser) (err error) {
+func (ms *MsocksServer) OnAuth(stream io.ReadWriteCloser) (err error) {
 	f, err := ReadFrame(stream)
 	if err != nil {
 		return
@@ -80,7 +79,8 @@ func (ms *MsocksServer) Handler(conn net.Conn) {
 		log.Notice(ErrAuthFailed.Error(), conn.RemoteAddr())
 		conn.Close()
 	})
-	err := ms.on_auth(conn)
+
+	err := ms.OnAuth(conn)
 	if err != nil {
 		log.Error("%s", err.Error())
 		return
@@ -90,6 +90,7 @@ func (ms *MsocksServer) Handler(conn net.Conn) {
 	sess := NewSession(conn)
 	sess.next_id = 1
 	sess.dialer = ms.dialer
+
 	ms.Add(sess)
 	defer ms.Remove(sess)
 	sess.Run()

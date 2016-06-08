@@ -1,16 +1,19 @@
 {
     "mode": "http",
     "listen": ":5234",
-    "server": "localhost:5233",
 
     "logfile": "client.log",
-    "loglevel": "INFO",
+    "loglevel": "NOTICE",
     "adminiface": "127.0.0.1:8888",
 
     "dnsnet": "internal",
 
-    "key": "toqq7QrjCSKSkT2wW6TtWQ==",
-
-    "username": "shell",
-    "password": "123"
+    "servers": [
+	{
+	    "server": "localhost:5233",
+	    "key": "toqq7QrjCSKSkT2wW6TtWQ==",
+	    "username": "shell",
+	    "password": "123"
+	}
+    ]
 }
